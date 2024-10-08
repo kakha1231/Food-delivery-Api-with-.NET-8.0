@@ -1,0 +1,28 @@
+﻿services:
+  apigateway:
+    container_name: ApiGateway
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    restart: on-failure
+    ports:
+      - 5298:5298
+      - 5000:5000
+  
+  userservice:
+    container_name: UserService
+    build:
+      context: .
+      dockerfile: UserService/Dockerfile
+    restart: on-failure
+    ports:
+      - 5038:5038
+  
+  RestaurantService:
+    container_name: RestaurantService
+    build:
+      context: .
+      dockerfile: RestaurantService/Dockerfile
+    restart: on-failure
+    ports:
+      - 5048:5048

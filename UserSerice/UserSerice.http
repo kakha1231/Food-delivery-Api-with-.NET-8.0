@@ -1,0 +1,6 @@
+@UserSerice = http://localhost:5104
+
+GET {{UserSerice}}/weatherforecast/
+Accept: application/json
+
+###

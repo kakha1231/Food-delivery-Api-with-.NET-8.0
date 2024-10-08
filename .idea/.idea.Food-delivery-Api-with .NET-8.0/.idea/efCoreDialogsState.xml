@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="EfCoreDialogsState">
+    <option name="keyValueStorage">
+      <map>
+        <entry key="Common:16359211-5a93-479c-9a93-1edf19b938da:dbContext" value="RestaurantService.Entity.RestaurantDbContext" />
+        <entry key="Common:7297697b-23c7-4f84-823a-b2c17592375e:dbContext" value="UserService.Entity.UserDbContext" />
+        <entry key="Common:buildConfiguration" value="Debug" />
+        <entry key="Common:noBuild" value="false" />
+        <entry key="Common:outputFolder" value="Migrations" />
+        <entry key="Common:useDefaultConnection" value="true" />
+      </map>
+    </option>
+  </component>
+</project>
