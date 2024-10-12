@@ -26,7 +26,9 @@ public class AccountService
     {
         _logger.LogInformation("Started Registration Process for Email: {username}", registrationDto.Email);
 
-        if (await _userManager.FindByEmailAsync(registrationDto.Email) != null)
+        var checkEmail = await _userManager.FindByEmailAsync(registrationDto.Email);
+       
+        if (checkEmail != null)
         {
             return "Email already exists";
         }
@@ -48,7 +50,6 @@ public class AccountService
         var errorMessage = string.Join("\n", createProcess.Errors.Select(e => e.Description));
             
         return errorMessage;
-
     }
 
 
@@ -74,7 +75,7 @@ public class AccountService
     }
 
     //TODO Mail confirmation method
-    public async Task<string> ConfirmEmail(string userId)
+    private async Task<string> ConfirmEmail(string userId)
     {
         var user = await _userManager.FindByIdAsync(userId);
 

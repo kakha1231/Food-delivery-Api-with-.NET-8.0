@@ -1,4 +1,5 @@
 using System.Text;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using UserService.Entity;
 using UserService.Jwt;
 using UserService.Models;
 using UserService.Services;
+using UserService.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +48,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddMassTransit(busConfigurator =>
+{
+    busConfigurator.SetKebabCaseEndpointNameFormatter();
 
+    busConfigurator.AddConsumer<RestaurantRegisteredEventConsumer>();
+    
+    busConfigurator.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(("rabbitmq"), h =>
+        {
+            h.Username(builder.Configuration["MessageBroker: Username"]);
+            h.Password(builder.Configuration["MessageBroker: Password"]);
+        });
+        configurator.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 

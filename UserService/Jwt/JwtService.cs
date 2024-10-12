@@ -19,7 +19,7 @@ public class JwtService
     {
         var userClaims = new List<Claim>()
         {
-            new Claim("id", user.Id),
+            new Claim("Id", user.Id),
             new Claim("UserName", user.UserName)
         };
 

@@ -4,7 +4,7 @@ using RestaurantService.Models;
 namespace RestaurantService.Dtos.Request;
 
 
-public class RegistrationDto
+public class RestaurantRegistrationDto
 {
     [Required]
     public string Name { get; set; }
