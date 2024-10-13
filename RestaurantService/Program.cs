@@ -20,6 +20,7 @@ builder.Services.AddDbContext<RestaurantDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
 
 builder.Services.AddScoped<RestaurantManagementService>();
+builder.Services.AddScoped<ProductManagementService>();
 
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();

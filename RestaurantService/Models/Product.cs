@@ -11,6 +11,8 @@ public class Product
     public decimal Price { get; set; }
     
     public string Description { set; get; }
+    
+    public bool InStock { set; get; }
     public int RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
 }

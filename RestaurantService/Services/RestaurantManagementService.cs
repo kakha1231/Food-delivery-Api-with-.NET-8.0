@@ -1,7 +1,5 @@
 ﻿using Common.Contracts;
 using MassTransit;
-using MassTransit.RabbitMqTransport;
-using Microsoft.AspNetCore.Authorization;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Entity;
 using RestaurantService.Models;

@@ -9,6 +9,7 @@ using UserService.Jwt;
 using UserService.Models;
 using UserService.Services;
 using UserService.Consumers;
+using UserService.Data.Seeders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,7 @@ builder.Services.AddScoped<JwtService>();
 
 builder.Services.AddIdentity<User,IdentityRole>()
     .AddUserManager<UserManager<User>>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<UserDbContext>();
 
     
@@ -67,12 +69,29 @@ builder.Services.AddMassTransit(busConfigurator =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+using (var scope = app.Services.CreateScope())
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+   
+    try
+    {
+        await RoleSeeder.SeedRoes(roleManager);
+        
+        logger.LogInformation("Roles Seeded Successfully");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex.Message,"Error while seeding roles");
+    }
+}
+
 
 app.UseHttpsRedirection();
 
