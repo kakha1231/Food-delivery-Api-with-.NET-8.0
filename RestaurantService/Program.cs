@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using RestaurantService.Entity;
 using RestaurantService.Services;
 using Common.Configuration;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +43,8 @@ builder.Services.AddMassTransit(busConfigurator =>
         configurator.ConfigureEndpoints(context);
     });
 });
+
+builder.Services.AddServiceDiscovery(op => op.UseConsul());
 
 var app = builder.Build();
 

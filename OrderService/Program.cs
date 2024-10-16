@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using OrderService.Entity;
 using OrderService.Services;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +27,8 @@ var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
+
+builder.Services.AddServiceDiscovery(op => op.UseConsul());
 
 var app = builder.Build();
 
