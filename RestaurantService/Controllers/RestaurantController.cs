@@ -26,12 +26,12 @@ public class RestaurantController : ControllerBase
 
     [HttpPost("/register-restaurant")]
     [Authorize]
-    public async Task<Restaurant> RegisterRestaurant(RestaurantRegistrationDto registrationDto)
+    public async Task<ActionResult<Restaurant>> RegisterRestaurant(RestaurantRegistrationDto registrationDto)
     {
 
         var userId = User.Claims.First(u => u.Type == "Id").Value;
         
-       return await _restaurantManagementService.RegisterRestaurant(registrationDto,userId);
+       return Ok(await _restaurantManagementService.RegisterRestaurant(registrationDto,userId));
     }
     
     

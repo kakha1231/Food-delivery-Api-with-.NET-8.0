@@ -6,6 +6,7 @@
         <entry key="Common:16359211-5a93-479c-9a93-1edf19b938da:dbContext" value="RestaurantService.Entity.RestaurantDbContext" />
         <entry key="Common:7297697b-23c7-4f84-823a-b2c17592375e:dbContext" value="UserService.Entity.UserDbContext" />
         <entry key="Common:buildConfiguration" value="Debug" />
+        <entry key="Common:dac61d78-6c71-4be3-821c-f99aefb145e1:dbContext" value="OrderService.Entity.OrderDbContext" />
         <entry key="Common:noBuild" value="false" />
         <entry key="Common:outputFolder" value="Migrations" />
         <entry key="Common:useDefaultConnection" value="true" />

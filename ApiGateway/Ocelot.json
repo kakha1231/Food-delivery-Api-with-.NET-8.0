@@ -10,7 +10,7 @@
         }
       ],
       "UpstreamPathTemplate": "/Restaurant/{url}",
-      "UpstreamHttpMethod": ["GET"]
+      "UpstreamHttpMethod": ["GET","POST","PUT"]
     },
     
     {
@@ -23,7 +23,7 @@
         }
       ],
       "UpstreamPathTemplate": "/User/{url}",
-      "UpstreamHttpMethod": ["GET"]
+      "UpstreamHttpMethod": ["GET","POST","PUT"]
     }
   ],
   

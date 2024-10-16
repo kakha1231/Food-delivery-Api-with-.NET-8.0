@@ -17,5 +17,13 @@
       <jdbc-url>jdbc:postgresql://localhost:5432/RestaurantDatabase?password=Warface-1231&amp;user=postgres</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="OrderDatabase@Localhost" uuid="73a23cfa-9fbe-4082-a66b-a151f54a2000">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <configured-by-url>true</configured-by-url>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://Localhost:5432/OrderDatabase?password=Warface-1231&amp;user=postgres</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

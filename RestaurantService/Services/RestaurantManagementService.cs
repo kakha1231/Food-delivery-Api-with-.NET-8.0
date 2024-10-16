@@ -23,6 +23,7 @@ public class RestaurantManagementService
     {
         var restaurant = registrationDto.CreateRestaurant();
         restaurant.OwnerId = userId;
+       
         try
         {
             await _restaurantDbContext.Restaurants.AddAsync(restaurant);

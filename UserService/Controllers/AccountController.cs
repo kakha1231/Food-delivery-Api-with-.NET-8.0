@@ -25,7 +25,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("/register")]
-    public async Task<IActionResult> Register(RegistrationDto registrationDto)
+    public async Task<ActionResult<string>> Register(RegistrationDto registrationDto)
     {
         var registrationProcess = await _AccountService.Register(registrationDto);
 
@@ -33,7 +33,7 @@ public class AccountController : ControllerBase
     }
     
     [HttpPost("/login")]
-    public async Task<IActionResult> Login(LoginDto loginDto)
+    public async Task<ActionResult<string>> Login(LoginDto loginDto)
     {
         var loginProcess = await _AccountService.Login(loginDto);
 
