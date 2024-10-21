@@ -3,31 +3,44 @@
     {
       "DownstreamPathTemplate": "/{url}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5048
-        }
-      ],
-      "UpstreamPathTemplate": "/Restaurant/{url}",
-      "UpstreamHttpMethod": ["GET","POST","PUT"]
+      "DownstreamHostAndPorts": [{
+        "Host": "restaurantservice",
+        "Port": 5048
+      }],
+      "UpstreamPathTemplate": "/restaurant/{url}",
+      "UpstreamHttpMethod": ["GET","POST","PUT"],
+      "LoadBalancer": "NoLoadBalancer"
     },
     
     {
+      "DownstreamPathTemplate": "/{url}", 
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{
+        "Host": "userservice",
+        "Port": 5038
+      }],
+      "UpstreamPathTemplate": "/user/{url}",
+      "UpstreamHttpMethod": ["GET","POST","PUT"],
+      "LoadBalancer": "NoLoadBalancer"
+    },
+
+    {
       "DownstreamPathTemplate": "/{url}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5038
-        }
-      ],
-      "UpstreamPathTemplate": "/User/{url}",
-      "UpstreamHttpMethod": ["GET","POST","PUT"]
+      "DownstreamHostAndPorts": [{
+        "Host": "orderservice",
+        "Port": 5058
+      }],
+      "UpstreamPathTemplate": "/order/{url}",
+      "UpstreamHttpMethod": ["GET","POST","PUT"],
+      "LoadBalancer": "NoLoadBalancer"
     }
   ],
-  
   "GlobalConfiguration": {
-    "BaseUrl" : "http://localhost:5123"
+    "ServiceDiscoveryProvider": {
+      "Host": "consul",
+      "Port": 8500,
+      "Type": "Consul"
+    }
   }
 }

@@ -17,13 +17,6 @@ public class RestaurantController : ControllerBase
         _restaurantManagementService = restaurantManagementService;
     }
     
-    
-    [HttpGet("/hello")]
-    public string Hello()
-    {
-        return "Hello from restaurant";
-    }
-
     [HttpPost("/register-restaurant")]
     [Authorize]
     public async Task<ActionResult<Restaurant>> RegisterRestaurant(RestaurantRegistrationDto registrationDto)

@@ -5,8 +5,8 @@ namespace OrderService.Entity;
 
 public class OrderDbContext : DbContext
 {
-    public DbSet<Order> Orders;
-    public DbSet<OrderItem> OrderItems;
+    public DbSet<Order> Orders { set; get; }
+    public DbSet<OrderItem> OrderItems { set; get; }
     
     public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options)
     {
@@ -16,11 +16,12 @@ public class OrderDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<OrderItem>()
-            .HasOne(it => it.Order)
-            .WithMany(ord => ord.OrderItems)
-            .HasForeignKey(it => it.OrderId);
+        
+        modelBuilder.Entity<Order>()
+            .HasMany(o => o.OrderItems)
+            .WithOne(oi => oi.Order)
+            .HasForeignKey(oi => oi.OrderId) 
+            .OnDelete(DeleteBehavior.Cascade); 
     }
     
 }

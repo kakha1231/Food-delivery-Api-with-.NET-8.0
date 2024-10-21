@@ -1,14 +1,19 @@
-﻿namespace OrderService.Models;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class OrderItem
+namespace OrderService.Models;
+
+public sealed class OrderItem
 {
+    [Key]
     public int Id { get; set; } 
+    
     public int ProductId { get; set; } 
-    public string ProductName { get; set; } 
+    
+    public string? ProductName { get; set; } 
     public decimal UnitPrice { get; set; } 
     public int Quantity { get; set; } 
-    
     public decimal TotalPrice => UnitPrice * Quantity;
-    public int OrderId { get; set; } 
-    public Order Order { set; get; }
+    
+    public int? OrderId { get; set; } 
+    public Order? Order { set; get; }
 }

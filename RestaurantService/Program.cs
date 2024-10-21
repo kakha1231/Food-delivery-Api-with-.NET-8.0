@@ -44,7 +44,9 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
-builder.Services.AddServiceDiscovery(op => op.UseConsul());
+builder.Services.AddServiceDiscovery(op => op.UseConsul());;
+
+builder.Services.AddHttpClient().AddServiceDiscovery(op => op.UseConsul());
 
 var app = builder.Build();
 
@@ -62,5 +64,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapGet("/health", () => "healthy");
 
 app.Run();

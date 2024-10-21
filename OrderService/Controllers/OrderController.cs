@@ -10,19 +10,25 @@ namespace OrderService.Controllers;
 public class OrderController : ControllerBase
 {
     private readonly OrderManagementService _orderManagementService;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public OrderController(OrderManagementService orderManagementService)
+    public OrderController(OrderManagementService orderManagementService, IHttpClientFactory httpClientFactory)
     {
         _orderManagementService = orderManagementService;
+        _httpClientFactory = httpClientFactory;
     }
 
 
     [Authorize]
     [HttpPost("/create-order")]
-    public async Task<Order> CreateOrder(CreateOrderDto createOrderDto)
+    public async Task<ActionResult<string>> CreateOrder(CreateOrderDto createOrderDto)
     {
         var userId = User.Claims.First(u => u.Type == "Id").Value;
         
-        return await _orderManagementService.CreateOrder(createOrderDto,userId);
+        return Ok(await _orderManagementService.CreateOrder(createOrderDto,userId));
     }
+
+
+    
 }
+

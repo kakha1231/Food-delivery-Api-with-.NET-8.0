@@ -1,5 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Dtos;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using OrderService.Dtos;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;
 using RestaurantService.Entity;
@@ -38,12 +41,37 @@ public class ProductManagementService
     {
         var product = await _restaurantDbContext.Products.FindAsync(productId);
 
-        if (product == null)
+        if (product is { InStock: true })
         {
-            throw new ArgumentException("Product Not Fount");
+            return ProductResponseDto.FromProduct(product);
         }
+        throw new ArgumentException("Product Not Fount");
+    }
 
-        return ProductResponseDto.FromProduct(product);
+    public async Task<List<ProductDto>> ValidateProducts(ProductValidationRequest validationRequest)
+    {
+        var productQuantities = validationRequest.Items.ToDictionary(item => item.Id, item => item.Quantity);
+        
+        var validProducts = await _restaurantDbContext.Products
+            .Where(product => productQuantities.Keys.Contains(product.Id) && 
+                              product.RestaurantId == validationRequest.RestaurantId && 
+                              product.InStock)
+            .Select(product => new 
+            {
+                product.Id,
+                product.Name,
+                product.Price
+            })
+            .ToListAsync();
+
+       
+        return validProducts.Select(product => new ProductDto
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Price = product.Price,
+            Quantity = productQuantities[product.Id]
+        }).ToList();
     }
     
 

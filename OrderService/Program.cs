@@ -7,13 +7,17 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using OrderService.Entity;
 using OrderService.Services;
+using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen(); 
@@ -28,7 +32,17 @@ var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
-builder.Services.AddServiceDiscovery(op => op.UseConsul());
+builder.Services.AddServiceDiscovery(op => op.UseConsul());;
+
+builder.Services.AddHttpClient("userServiceClient", client =>
+{
+    client.BaseAddress = new Uri("http://user-service");
+}).AddServiceDiscovery();
+
+builder.Services.AddHttpClient("productServiceClient", client =>
+{
+    client.BaseAddress = new Uri("http://restaurant-service");
+}).AddServiceDiscovery();
 
 var app = builder.Build();
 
@@ -46,5 +60,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); // Map controller endpoints
+
+app.MapGet("/health", () => "healthy");
 
 app.Run();

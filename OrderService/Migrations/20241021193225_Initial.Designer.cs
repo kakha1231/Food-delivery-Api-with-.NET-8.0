@@ -12,7 +12,7 @@ using OrderService.Entity;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20241015200544_Initial")]
+    [Migration("20241021193225_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -44,18 +44,12 @@ namespace OrderService.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("DeliveryAddress")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<decimal>("DeliveryFee")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("DeliveryLocation")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("OrderNumber")
@@ -67,7 +61,7 @@ namespace OrderService.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal?>("TotalAmount")
                         .HasColumnType("numeric");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -75,7 +69,7 @@ namespace OrderService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("OrderService.Models.OrderItem", b =>
@@ -86,14 +80,13 @@ namespace OrderService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("OrderId")
+                    b.Property<int?>("OrderId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
                     b.Property<string>("ProductName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
@@ -106,7 +99,7 @@ namespace OrderService.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderItem");
+                    b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("OrderService.Models.OrderItem", b =>
@@ -114,8 +107,7 @@ namespace OrderService.Migrations
                     b.HasOne("OrderService.Models.Order", "Order")
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Order");
                 });

@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 using UserService.Entity;
 using UserService.Jwt;
 using UserService.Models;
 using UserService.Services;
 using UserService.Consumers;
 using UserService.Data.Seeders;
+using UserService.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +58,9 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
+var configuration = builder.Configuration;
+
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -88,5 +94,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.RegisterConsul(configuration, app.Lifetime);
+
+app.MapGet("/health", () => "healthy");
 
 app.Run();

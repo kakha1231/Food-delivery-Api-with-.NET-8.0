@@ -17,7 +17,6 @@ public class AccountController : ControllerBase
     {
         _AccountService = accountService;
     }
-    [Authorize]
     [HttpGet("/hello")]
     public string Hello()
     {

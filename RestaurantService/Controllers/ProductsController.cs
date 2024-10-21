@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Common.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Dtos;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;
 using RestaurantService.Services;
@@ -27,6 +29,13 @@ public class ProductsController : ControllerBase
     public async Task<ActionResult<ProductResponseDto>> GetProduct(int productId)
     {
         return Ok(await _productManagementService.GetProduct(productId));
+    }
+
+
+    [HttpPost("/validate")]
+    public async Task<ActionResult<List<ProductDto>>> ValidateProducts(ProductValidationRequest validationRequest)
+    {
+        return Ok(await _productManagementService.ValidateProducts(validationRequest));
     }
 
     [Authorize]
