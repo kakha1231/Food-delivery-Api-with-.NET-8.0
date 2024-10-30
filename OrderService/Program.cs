@@ -1,4 +1,5 @@
 using Common.Configuration;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddEndpointsApiExplorer(); 
 builder.Services.AddSwaggerGen(); 
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
@@ -32,7 +34,22 @@ var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
-builder.Services.AddServiceDiscovery(op => op.UseConsul());;
+builder.Services.AddMassTransit(busConfigurator =>
+{
+    busConfigurator.SetKebabCaseEndpointNameFormatter();
+    
+    busConfigurator.UsingRabbitMq((context, configurator) =>
+    {
+        configurator.Host(("rabbitmq"), h =>
+        {
+            h.Username(builder.Configuration["MessageBroker: Username"]);
+            h.Password(builder.Configuration["MessageBroker: Password"]);
+        });
+        configurator.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddServiceDiscovery(op => op.UseConsul());
 
 builder.Services.AddHttpClient("userServiceClient", client =>
 {

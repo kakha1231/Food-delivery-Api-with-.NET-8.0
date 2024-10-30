@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using RestaurantService.Entity;
 using RestaurantService.Services;
 using Common.Configuration;
+using RestaurantService.Consumers;
+using RestaurantService.Hubs;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
@@ -29,9 +31,13 @@ var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
+builder.Services.AddSignalR();
+
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+    busConfigurator.AddConsumer<OrderCreatedEventConsumer>();
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
@@ -64,6 +70,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<RestaurantHub>("/restaurantHub");
 
 app.MapGet("/health", () => "healthy");
 

@@ -1,5 +1,7 @@
-﻿using Common.Dtos;
+﻿using Common.Contracts;
+using Common.Dtos;
 using Common.Library;
+using MassTransit;
 using OrderService.Dtos;
 using OrderService.Entity;
 using OrderService.Models;
@@ -11,12 +13,14 @@ public class OrderManagementService
     private readonly OrderDbContext _orderDbContext;
     private readonly ILogger<OrderManagementService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public OrderManagementService(OrderDbContext orderDbContext, ILogger<OrderManagementService> logger, IHttpClientFactory httpClientFactory)
+    public OrderManagementService(OrderDbContext orderDbContext, ILogger<OrderManagementService> logger, IHttpClientFactory httpClientFactory, IPublishEndpoint publishEndpoint)
     {
         _orderDbContext = orderDbContext;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<string> CreateOrder(CreateOrderDto createOrderDto, string userId)
@@ -52,6 +56,22 @@ public class OrderManagementService
         _orderDbContext.Orders.Add(order);
         await _orderDbContext.SaveChangesAsync();
 
+        await _publishEndpoint.Publish(new OrderCreatedEvent
+        {
+            OrderId = order.Id,
+            RestaurantId = order.RestaurantId,
+            Notes = order.Notes,
+            CreatedAt = order.CreatedAt,
+            OrderItems = order.OrderItems.Select(it => new ProductDto
+            {
+                Id = it.ProductId,
+                Name = it.ProductName,
+                Price = it.UnitPrice,
+                Quantity = it.Quantity
+            }).ToList(),
+            OrderNumber = order.OrderNumber
+        });
+        
         return "order created";
     }
 
@@ -83,8 +103,8 @@ public class OrderManagementService
          {
              return new ProductValidationResult { IsValid = false };
          }
-
          return new ProductValidationResult { IsValid = true, ValidProducts = validProducts };
     }
 }
+
 

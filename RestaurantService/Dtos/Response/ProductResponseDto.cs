@@ -22,7 +22,7 @@ public class ProductResponseDto
         {
             Id = product.Id,
             Name = product.Name,
-            Category = product.Category,
+            Category = product.Category.ToString(),
             Price = product.Price,
             Description = product.Description
         };

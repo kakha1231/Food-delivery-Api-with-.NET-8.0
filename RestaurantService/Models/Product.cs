@@ -6,7 +6,7 @@ public class Product
     
     public string Name { get; set; }
     
-    public string Category { set; get; }
+    public ProductCategory Category { set; get; }
     
     public decimal Price { get; set; }
     
@@ -15,4 +15,41 @@ public class Product
     public bool InStock { set; get; }
     public int RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
+}
+
+
+public enum ProductCategory
+{
+    Alcohol,
+    American,
+    Asian,
+    BakeryAndPastry,
+    Beer,
+    Breakfast,
+    Burgers,
+    Chicken,
+    Desserts,
+    Drinks,
+    European,
+    FastFood,
+    Georgian,
+    Grill,
+    Healthy,
+    HotDogs,
+    IceCream,
+    Indian,
+    International,
+    Italian,
+    Mexican,
+    Pasta,
+    Pizza,
+    Salads,
+    Sandwich,
+    Shawarma,
+    Soup,
+    Sushi,
+    Sweets,
+    TeaCoffee,
+    Vegetarian,
+    Wine,
 }

@@ -16,10 +16,15 @@ public class AddProductDto
 
     public Product CreateProduct()
     {
+        if (!Enum.TryParse<ProductCategory>(Category, true, out var parsedCategory))
+        {
+            throw new ArgumentException("Invalid category");
+        }
+        
         return new Product
         {
             Name = Name,
-            Category = Category,
+            Category = parsedCategory,
             Price = Price,
             Description = Description,
             InStock = InStock

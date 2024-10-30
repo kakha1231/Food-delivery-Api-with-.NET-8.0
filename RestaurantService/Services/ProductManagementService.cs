@@ -25,14 +25,7 @@ public class ProductManagementService
     public async Task<List<ProductResponseDto>> GetProducts()
     {
         var products = await _restaurantDbContext.Products
-            .Select(p => new ProductResponseDto
-            {
-                Id = p.Id,
-                Name = p.Name,
-                Category = p.Category,
-                Price = p.Price,
-                Description = p.Description
-            })
+            .Select(p => ProductResponseDto.FromProduct(p))
             .ToListAsync();
         return products;
     }
@@ -123,8 +116,13 @@ public class ProductManagementService
             throw new ArgumentException("Product Not Found or does not belong to your restaurant");
         }
         
+        if (!Enum.TryParse(editProductDto.Category, true, out ProductCategory parsedCategory))
+        {
+            throw new ArgumentException("Invalid category value");
+        }
+        
         product.Name = editProductDto.Name;
-        product.Category = editProductDto.Category;
+        product.Category = parsedCategory;
         product.Price = editProductDto.Price;
         product.Description = editProductDto.Description;
         product.InStock = editProductDto.InStock;
