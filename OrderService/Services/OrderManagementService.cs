@@ -1,5 +1,6 @@
 ﻿using Common.Contracts;
 using Common.Dtos;
+using Common.Enums;
 using Common.Library;
 using MassTransit;
 using OrderService.Dtos;
@@ -29,7 +30,7 @@ public class OrderManagementService
         
         if (!productValidationResult.IsValid)
         {
-            throw new InvalidOperationException("Invalid order details");
+            throw new Exception("Invalid order details");
         }
         
         var order = new Order
@@ -71,7 +72,6 @@ public class OrderManagementService
             }).ToList(),
             OrderNumber = order.OrderNumber
         });
-        
         return "order created";
     }
 

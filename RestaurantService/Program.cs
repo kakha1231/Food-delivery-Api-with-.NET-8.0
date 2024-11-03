@@ -33,6 +33,21 @@ builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
 builder.Services.AddSignalR();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder
+                .WithOrigins(
+                    "http://localhost:5500"   // Live Server default
+                )
+                .AllowAnyMethod() // Allow any HTTP method (GET, POST, etc.)
+                .AllowAnyHeader() // Allow any HTTP header
+                .AllowCredentials();
+        });
+});
+
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -62,6 +77,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAllOrigins");
 
 app.UseHttpsRedirection();
 

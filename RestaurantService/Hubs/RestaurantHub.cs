@@ -1,12 +1,23 @@
 ﻿using System.Collections.Concurrent;
+using System.Runtime.InteropServices.JavaScript;
+using Common.Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 
 namespace RestaurantService.Hubs;
 
 public class RestaurantHub : Hub
 {
-    // Store restaurant connections in memory (restaurantId -> connectionId)
-    private static readonly ConcurrentDictionary<string, string> _connections = new();
+    private readonly IPublishEndpoint _publishEndpoint;
+    
+    //TODO implement double map to faster up lookup process and change inmemory to redis
+    //  (restaurantId -> connectionId) 
+    private static readonly ConcurrentDictionary<string, string> Connections = new();
+
+    public RestaurantHub(IPublishEndpoint publishEndpoint)
+    {
+        _publishEndpoint = publishEndpoint;
+    }
 
     public override async Task OnConnectedAsync()
     {
@@ -15,18 +26,17 @@ public class RestaurantHub : Hub
         
         if (!string.IsNullOrEmpty(restaurantId))
         {
-            _connections[restaurantId] = Context.ConnectionId;
+            Connections[restaurantId] = Context.ConnectionId;
         }
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        // Remove restaurant from connection list on disconnect
-        string restaurantId = _connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        var restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
         if (restaurantId != null)
         {
-            _connections.TryRemove(restaurantId, out _);
+            Connections.TryRemove(restaurantId, out _);
         }
         await base.OnDisconnectedAsync(exception);
     }
@@ -34,14 +44,50 @@ public class RestaurantHub : Hub
     // Optional: Method for a restaurant to manually register itself if needed
     public Task RegisterRestaurant(string restaurantId)
     {
-        _connections[restaurantId] = Context.ConnectionId;
+        Connections[restaurantId] = Context.ConnectionId;
         return Task.CompletedTask;
     }
-
-    // Get the connection ID for a specific restaurant
+    
     public static string? GetConnectionId(string restaurantId)
     {
-        _connections.TryGetValue(restaurantId, out string? connectionId);
+        Connections.TryGetValue(restaurantId, out string? connectionId);
         return connectionId;
+    }
+    
+    
+    public async Task AcceptOrder(int orderId)
+    {
+        Console.WriteLine($"order accepted {orderId}");
+        
+        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        
+        if (restaurantId != null)
+        {
+            Console.WriteLine($"order accepted {orderId} part2");
+            await _publishEndpoint.Publish(new OrderAcceptedByRestaurantEvent
+            {
+                OrderId = orderId,
+                RestaurantId = int.Parse(restaurantId)
+            });
+        }
+    }
+    public async Task RejectOrder(int orderId)
+    {
+        Console.WriteLine($"order rejected {orderId}");
+        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+    
+        if (restaurantId != null)
+        {
+            Console.WriteLine($"order rejected {orderId} part2");
+            await _publishEndpoint.Publish(new OrderRejectedByRestaurantEvent
+            {
+                OrderId = orderId,
+                RestaurantId = int.Parse(restaurantId)
+            });
+        }
+        else
+        {
+            Console.WriteLine("Restaurant ID not found for current connection.");
+        }
     }
 }

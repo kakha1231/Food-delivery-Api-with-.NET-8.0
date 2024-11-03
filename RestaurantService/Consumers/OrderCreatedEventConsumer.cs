@@ -13,14 +13,8 @@ public sealed class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
     {
         _hubContext = hubContext;
     }
-
-    
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
-        Console.WriteLine("Received message about creating order");
-        Console.WriteLine(context.Message.OrderId);
-        Console.WriteLine(context.Message.Notes);
-
         string? connectionId = RestaurantHub.GetConnectionId(context.Message.RestaurantId.ToString());
         
         if (connectionId != null)

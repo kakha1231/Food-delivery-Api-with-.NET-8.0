@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Common.Enums;
 
 namespace OrderService.Models;
 
@@ -31,16 +32,4 @@ public class Order
     public int OrderNumber { set; get; }
 
     public ICollection<OrderItem> OrderItems { set; get; } = new List<OrderItem>();
-}
-
-
-public enum OrderStatus
-{
-    Pending,
-    Accepted,
-    Preparing,
-    Ready,
-    OutForDelivery,
-    Delivered,
-    Canceled,
 }
