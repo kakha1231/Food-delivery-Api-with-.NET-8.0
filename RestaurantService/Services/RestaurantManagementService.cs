@@ -1,5 +1,6 @@
 ﻿using Common.Contracts;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Entity;
 using RestaurantService.Models;
@@ -21,24 +22,24 @@ public class RestaurantManagementService
 
     public async Task<Restaurant> RegisterRestaurant(RestaurantRegistrationDto registrationDto,string userId)
     {
+        var restaurantExists =await _restaurantDbContext.Restaurants.FirstOrDefaultAsync(r => r.OwnerId == userId);
+
+        if (restaurantExists != null)
+        {
+            throw new Exception("You have already registered restaurant");
+        }
+        
         var restaurant = registrationDto.CreateRestaurant();
         restaurant.OwnerId = userId;
-       
-        try
-        {
-            await _restaurantDbContext.Restaurants.AddAsync(restaurant);
-            await _restaurantDbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex.Message,"Error While Adding Restaurant");
-            throw new Exception(ex.Message);
-        }
-
+        
+        await _restaurantDbContext.Restaurants.AddAsync(restaurant);
+        await _restaurantDbContext.SaveChangesAsync();
+        
         await _publishEndpoint.Publish(new RestaurantRegisteredEvent
         {
             UserId = userId
         });
+        
         return restaurant;
     }
 }

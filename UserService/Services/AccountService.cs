@@ -41,16 +41,30 @@ public class AccountService
         var userToRegister = registrationDto.CreateUser();
         
         var createProcess = await _userManager.CreateAsync(userToRegister, registrationDto.Password);
-
-        if (createProcess.Succeeded)
+       
+        if (!createProcess.Succeeded)
         {
-            return "user Registered successfully";
+            var errorMessage = string.Join("\n", createProcess.Errors.Select(e => e.Description));
+          
+            _logger.LogError("Error creating user: {errors}", errorMessage);
+            
+            return errorMessage;
         }
         
-        var errorMessage = string.Join("\n", createProcess.Errors.Select(e => e.Description));
+        var roleAssignmentResult = await _userManager.AddToRoleAsync(userToRegister, "User");
+       
+        if (!roleAssignmentResult.Succeeded)
+        {
+            var roleErrorMessage = string.Join("\n", roleAssignmentResult.Errors.Select(e => e.Description));
+           
+            _logger.LogError("Error assigning role: {errors}", roleErrorMessage);
             
-        return errorMessage;
+            return roleErrorMessage;
+        }
+       
+        return "User registered successfully";
     }
+    
 
 
     public async Task<string> Login(LoginDto loginDto)

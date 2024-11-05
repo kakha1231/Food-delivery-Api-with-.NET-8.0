@@ -6,7 +6,7 @@ using OrderService.Entity;
 
 namespace OrderService.Consumers;
 
-public class OrderAcceptedByRestaurantEventConsumer : IConsumer<OrderAcceptedByRestaurantEvent>
+public sealed class OrderAcceptedByRestaurantEventConsumer : IConsumer<OrderAcceptedByRestaurantEvent>
 {
     private readonly OrderDbContext _orderDbContext;
 
@@ -21,9 +21,10 @@ public class OrderAcceptedByRestaurantEventConsumer : IConsumer<OrderAcceptedByR
             .Where(o => o.Id == context.Message.OrderId && o.RestaurantId == context.Message.RestaurantId)
             .FirstOrDefaultAsync();
 
-        if (order != null && order.Status != OrderStatus.Preparing)
+        if (order != null && order.Status != OrderStatus.Accepted)
         {
-            order.Status = OrderStatus.Preparing;
+            order.Status = OrderStatus.Accepted;
+            order.UpdatedAt = context.Message.Timestamp;
             await _orderDbContext.SaveChangesAsync();
         }
     }

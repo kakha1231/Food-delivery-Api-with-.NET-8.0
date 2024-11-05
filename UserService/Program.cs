@@ -46,6 +46,7 @@ builder.Services.AddMassTransit(busConfigurator =>
     busConfigurator.SetKebabCaseEndpointNameFormatter();
 
     busConfigurator.AddConsumer<RestaurantRegisteredEventConsumer>();
+    busConfigurator.AddConsumer<CourierRegisteredEventConsumer>();
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {

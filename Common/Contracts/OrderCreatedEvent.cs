@@ -12,8 +12,6 @@ public record OrderCreatedEvent
     
     public List<ProductDto> OrderItems { get; set; }
     
-    public DateTime CreatedAt { get; set; }
-    
     public int OrderNumber { get; set; }
     
 }

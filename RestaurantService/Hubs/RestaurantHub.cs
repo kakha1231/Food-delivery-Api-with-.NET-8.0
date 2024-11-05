@@ -57,13 +57,10 @@ public class RestaurantHub : Hub
     
     public async Task AcceptOrder(int orderId)
     {
-        Console.WriteLine($"order accepted {orderId}");
-        
         string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
         
         if (restaurantId != null)
         {
-            Console.WriteLine($"order accepted {orderId} part2");
             await _publishEndpoint.Publish(new OrderAcceptedByRestaurantEvent
             {
                 OrderId = orderId,
@@ -73,21 +70,33 @@ public class RestaurantHub : Hub
     }
     public async Task RejectOrder(int orderId)
     {
-        Console.WriteLine($"order rejected {orderId}");
         string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
-    
+
         if (restaurantId != null)
         {
-            Console.WriteLine($"order rejected {orderId} part2");
             await _publishEndpoint.Publish(new OrderRejectedByRestaurantEvent
             {
                 OrderId = orderId,
                 RestaurantId = int.Parse(restaurantId)
             });
         }
-        else
+    }
+
+    public async Task UpdateOrderStatus(int orderId, string status)
+    {
+        Console.WriteLine($"status updated {status}");
+        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+
+        if (restaurantId != null)
         {
-            Console.WriteLine("Restaurant ID not found for current connection.");
+            Console.WriteLine($"status updated {status} part 2");
+            await _publishEndpoint.Publish(new OrderStatusUpdatedEvent
+            {
+                OrderId = orderId,
+                RestaurantId = int.Parse(restaurantId),
+                Status = status
+            });
         }
+        
     }
 }

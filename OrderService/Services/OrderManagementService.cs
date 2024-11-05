@@ -62,7 +62,6 @@ public class OrderManagementService
             OrderId = order.Id,
             RestaurantId = order.RestaurantId,
             Notes = order.Notes,
-            CreatedAt = order.CreatedAt,
             OrderItems = order.OrderItems.Select(it => new ProductDto
             {
                 Id = it.ProductId,

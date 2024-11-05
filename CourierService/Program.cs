@@ -1,5 +1,6 @@
 using Common.Configuration;
-using Common.Contracts;
+using CourierService.Entity;
+using CourierService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,29 +8,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
-using OrderService.Consumers;
-using OrderService.Entity;
-using OrderService.Services;
-using Steeltoe.Common.Http.Discovery;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add services to the container.
+builder.Services.AddControllers(); // Register controllers
+builder.Services.AddEndpointsApiExplorer(); // For Swagger or API documentation, optional
+builder.Services.AddSwaggerGen(); // Optional for Swagger UI
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-});
-
-builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen(); 
-builder.Services.AddSignalR();
-
-builder.Services.AddDbContext<OrderDbContext>(options =>
+builder.Services.AddDbContext<CourierDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
 
-builder.Services.AddScoped<OrderManagementService>();
+builder.Services.AddScoped<CourierManagementService>();
 
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
@@ -39,10 +29,6 @@ builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
-
-    busConfigurator.AddConsumer<OrderAcceptedByRestaurantEventConsumer>();
-    busConfigurator.AddConsumer<OrderRejectedByRestaurantEventConsumer>();
-    busConfigurator.AddConsumer<OrderStatusUpdatedEventConsumer>();
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
@@ -55,18 +41,6 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
-builder.Services.AddServiceDiscovery(op => op.UseConsul());
-
-builder.Services.AddHttpClient("userServiceClient", client =>
-{
-    client.BaseAddress = new Uri("http://user-service");
-}).AddServiceDiscovery();
-
-builder.Services.AddHttpClient("productServiceClient", client =>
-{
-    client.BaseAddress = new Uri("http://restaurant-service");
-}).AddServiceDiscovery();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -78,12 +52,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication(); 
-
 app.UseAuthorization();
 
 app.MapControllers(); // Map controller endpoints
-
-app.MapGet("/health", () => "healthy");
 
 app.Run();

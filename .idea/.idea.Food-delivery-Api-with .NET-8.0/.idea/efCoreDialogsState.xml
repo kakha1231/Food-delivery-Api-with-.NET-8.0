@@ -5,6 +5,7 @@
       <map>
         <entry key="Common:16359211-5a93-479c-9a93-1edf19b938da:dbContext" value="RestaurantService.Entity.RestaurantDbContext" />
         <entry key="Common:7297697b-23c7-4f84-823a-b2c17592375e:dbContext" value="UserService.Entity.UserDbContext" />
+        <entry key="Common:8ab20176-5c70-4fd1-9289-07e38c8c0d35:dbContext" value="CourierService.Entity.CourierDbContext" />
         <entry key="Common:buildConfiguration" value="Debug" />
         <entry key="Common:dac61d78-6c71-4be3-821c-f99aefb145e1:dbContext" value="OrderService.Entity.OrderDbContext" />
         <entry key="Common:noBuild" value="false" />

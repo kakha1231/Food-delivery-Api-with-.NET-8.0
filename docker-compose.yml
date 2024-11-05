@@ -57,7 +57,7 @@
     ports:
       - "5038:5038"
   
-  RestaurantService:
+  restaurantservice:
     container_name: RestaurantService
     build:
       context: .
@@ -73,7 +73,7 @@
     ports:
       - "5048:5048"
   
-  OrderService:
+  orderservice:
     container_name: OrderService
     build:
       context: .
@@ -88,6 +88,23 @@
       - backend
     ports:
       - "5058:5058"
+      
+  courierservice :
+    container_name: CourierService
+    build:
+      context: .
+      dockerfile: CourierService/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    restart: on-failure
+    networks:
+      - backend
+    ports:
+      - "5068:5068"
+    
         
         
 networks: 

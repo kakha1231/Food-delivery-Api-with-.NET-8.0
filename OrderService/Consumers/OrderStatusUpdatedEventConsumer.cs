@@ -6,25 +6,24 @@ using OrderService.Entity;
 
 namespace OrderService.Consumers;
 
-public sealed class OrderRejectedByRestaurantEventConsumer : IConsumer<OrderRejectedByRestaurantEvent>
+public sealed class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent>
 {
     private readonly OrderDbContext _orderDbContext;
 
-    public OrderRejectedByRestaurantEventConsumer(OrderDbContext orderDbContext)
-    {
-        _orderDbContext = orderDbContext;
-    }
-    
-    public async Task Consume(ConsumeContext<OrderRejectedByRestaurantEvent> context)
+    public async Task Consume(ConsumeContext<OrderStatusUpdatedEvent> context)
     {
         var order = await _orderDbContext.Orders
             .Where(o => o.Id == context.Message.OrderId && o.RestaurantId == context.Message.RestaurantId)
             .FirstOrDefaultAsync();
 
-        if (order != null && order.Status != OrderStatus.Rejected)
+        if (!Enum.TryParse<OrderStatus>(context.Message.Status, true, out var parsedStatus))
         {
-            order.Status = OrderStatus.Rejected;
-            order.UpdatedAt = context.Message.Timestamp;
+            throw new ArgumentException("Invalid category");
+        }
+        
+        if (order != null)
+        {
+            order.Status = parsedStatus;
             await _orderDbContext.SaveChangesAsync();
         }
     }
