@@ -82,8 +82,10 @@ public class AccountService
         { 
             return  "Incorrect email or password";
         }
+        
+        var userRole = await _userManager.GetRolesAsync(user);
 
-        var jwt = _jwtService.CreateJwt(user);
+        var jwt = _jwtService.CreateJwt(user,userRole);
 
         return jwt;
     }

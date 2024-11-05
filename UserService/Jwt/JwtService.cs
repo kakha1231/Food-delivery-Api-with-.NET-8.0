@@ -15,13 +15,15 @@ public class JwtService
         _config = config;
     }
 
-    public string CreateJwt(User user)
+    public string CreateJwt(User user,IList<string> roles)
     {
         var userClaims = new List<Claim>()
         {
             new Claim("Id", user.Id),
             new Claim("UserName", user.UserName)
         };
+        
+        userClaims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var SecKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:JwtSecret"]));
         var credentials = new SigningCredentials(SecKey, SecurityAlgorithms.HmacSha256);
