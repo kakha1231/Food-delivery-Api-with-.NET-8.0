@@ -1,7 +1,6 @@
 ﻿using Common.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Dtos;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;
 using RestaurantService.Services;

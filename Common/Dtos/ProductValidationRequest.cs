@@ -1,8 +1,8 @@
 ﻿using Common.Dtos;
 
-namespace OrderService.Dtos;
+namespace Common.Dtos;
 
-public class ProductValidationRequest
+public record ProductValidationRequest
 {
     public int RestaurantId { get; set; }
     

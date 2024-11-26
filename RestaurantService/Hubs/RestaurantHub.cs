@@ -3,20 +3,24 @@ using System.Runtime.InteropServices.JavaScript;
 using Common.Contracts;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
+using RestaurantService.Services;
 
 namespace RestaurantService.Hubs;
 
 public class RestaurantHub : Hub
 {
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly RestaurantManagementService _restaurantManagementService;
     
     //TODO implement double map to faster up lookup process and change inmemory to redis
     //  (restaurantId -> connectionId) 
-    private static readonly ConcurrentDictionary<string, string> Connections = new();
+    //will not be needed after authorisation
+    private static readonly ConcurrentDictionary<string, string> RestaurantConnections = new();
 
-    public RestaurantHub(IPublishEndpoint publishEndpoint)
+    public RestaurantHub(IPublishEndpoint publishEndpoint, RestaurantManagementService restaurantManagementService)
     {
         _publishEndpoint = publishEndpoint;
+        _restaurantManagementService = restaurantManagementService;
     }
 
     public override async Task OnConnectedAsync()
@@ -26,17 +30,17 @@ public class RestaurantHub : Hub
         
         if (!string.IsNullOrEmpty(restaurantId))
         {
-            Connections[restaurantId] = Context.ConnectionId;
+            RestaurantConnections[restaurantId] = Context.ConnectionId;
         }
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        var restaurantId = RestaurantConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
         if (restaurantId != null)
         {
-            Connections.TryRemove(restaurantId, out _);
+            RestaurantConnections.TryRemove(restaurantId, out _);
         }
         await base.OnDisconnectedAsync(exception);
     }
@@ -44,33 +48,40 @@ public class RestaurantHub : Hub
     // Optional: Method for a restaurant to manually register itself if needed
     public Task RegisterRestaurant(string restaurantId)
     {
-        Connections[restaurantId] = Context.ConnectionId;
+        RestaurantConnections[restaurantId] = Context.ConnectionId;
         return Task.CompletedTask;
     }
     
     public static string? GetConnectionId(string restaurantId)
     {
-        Connections.TryGetValue(restaurantId, out string? connectionId);
+        RestaurantConnections.TryGetValue(restaurantId, out string? connectionId);
         return connectionId;
     }
     
     
     public async Task AcceptOrder(int orderId)
     {
-        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        string restaurantId = RestaurantConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        
         
         if (restaurantId != null)
         {
+            var restaurant = await _restaurantManagementService.GetRestaurantById(int.Parse(restaurantId));
+            
             await _publishEndpoint.Publish(new OrderAcceptedByRestaurantEvent
             {
                 OrderId = orderId,
-                RestaurantId = int.Parse(restaurantId)
+                RestaurantId = int.Parse(restaurantId),
+                RestaurantName = restaurant.Name,
+                RestaurantLocation = restaurant.Location,
+                RestaurantAddress = restaurant.Address,
+                Timestamp = default,
             });
         }
     }
     public async Task RejectOrder(int orderId)
     {
-        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        string restaurantId = RestaurantConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
 
         if (restaurantId != null)
         {
@@ -84,12 +95,10 @@ public class RestaurantHub : Hub
 
     public async Task UpdateOrderStatus(int orderId, string status)
     {
-        Console.WriteLine($"status updated {status}");
-        string restaurantId = Connections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
+        string restaurantId = RestaurantConnections.FirstOrDefault(x => x.Value == Context.ConnectionId).Key;
 
         if (restaurantId != null)
         {
-            Console.WriteLine($"status updated {status} part 2");
             await _publishEndpoint.Publish(new OrderStatusUpdatedEvent
             {
                 OrderId = orderId,

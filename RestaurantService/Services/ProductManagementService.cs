@@ -1,8 +1,5 @@
 ﻿using Common.Dtos;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using OrderService.Dtos;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;
 using RestaurantService.Entity;

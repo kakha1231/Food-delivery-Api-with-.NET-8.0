@@ -12,7 +12,7 @@ public sealed class OrderItem
     public string? ProductName { get; set; } 
     public decimal UnitPrice { get; set; } 
     public int Quantity { get; set; } 
-    public decimal TotalPrice => UnitPrice * Quantity;
+    private decimal TotalPrice => UnitPrice * Quantity;
     
     public int? OrderId { get; set; } 
     public Order? Order { set; get; }

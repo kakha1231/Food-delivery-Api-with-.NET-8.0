@@ -1,7 +1,6 @@
 ﻿using Common.Contracts;
 using Common.Dtos;
 using Common.Enums;
-using Common.Library;
 using MassTransit;
 using OrderService.Dtos;
 using OrderService.Entity;
@@ -62,16 +61,10 @@ public class OrderManagementService
             OrderId = order.Id,
             RestaurantId = order.RestaurantId,
             Notes = order.Notes,
-            OrderItems = order.OrderItems.Select(it => new ProductDto
-            {
-                Id = it.ProductId,
-                Name = it.ProductName,
-                Price = it.UnitPrice,
-                Quantity = it.Quantity
-            }).ToList(),
+            OrderItems = productValidationResult.ValidProducts,
             OrderNumber = order.OrderNumber
         });
-        return "order created";
+        return $"order created {order.Id}";
     }
 
 

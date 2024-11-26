@@ -34,6 +34,7 @@ builder.Services.AddIdentity<User,IdentityRole>()
     .AddUserManager<UserManager<User>>()
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<UserDbContext>();
+    
 
     
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
@@ -95,8 +96,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.RegisterConsul(configuration, app.Lifetime);
 
 app.MapGet("/health", () => "healthy");
 

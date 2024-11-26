@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 // Optional: Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<RestaurantDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
@@ -31,19 +32,20 @@ var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
-builder.Services.AddSignalR();
-
-builder.Services.AddCors(options =>
+builder.Services.AddCors(options =>  //for testing purposes i'm using cors and mock frontend to test websockets
 {
     options.AddPolicy("AllowAllOrigins",
         builder =>
         {
             builder
                 .WithOrigins(
-                    "http://localhost:5500"   // Live Server default
-                )
-                .AllowAnyMethod() // Allow any HTTP method (GET, POST, etc.)
-                .AllowAnyHeader() // Allow any HTTP header
+                    "http://localhost:5500",
+                    "http://localhost:5501",
+                    "http://localhost:5502",
+                    "http://localhost:5503" 
+                ) 
+                .AllowAnyMethod() 
+                .AllowAnyHeader() 
                 .AllowCredentials();
         });
 });

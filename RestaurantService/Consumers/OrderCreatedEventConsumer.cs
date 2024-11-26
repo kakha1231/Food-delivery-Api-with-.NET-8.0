@@ -19,7 +19,6 @@ public sealed class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         
         if (connectionId != null)
         {
-            // Send notification directly to the specific connection
             await _hubContext.Clients.Client(connectionId)
                 .SendAsync("ReceiveOrderNotification", new
                 {
