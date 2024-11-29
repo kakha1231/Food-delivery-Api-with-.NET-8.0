@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantService.Dtos.Request;
+using RestaurantService.Dtos.Response;
 using RestaurantService.Models;
 using RestaurantService.Services;
 
@@ -15,6 +16,18 @@ public class RestaurantController : ControllerBase
     public RestaurantController(RestaurantManagementService restaurantManagementService)
     {
         _restaurantManagementService = restaurantManagementService;
+    }
+
+    [HttpGet("/restaurants")]
+    public async Task<ActionResult<List<RestaurantResponseDto>>> GetRestaurants()
+    {
+        return Ok(await _restaurantManagementService.GetRestaurants());
+    }
+
+    [HttpGet("/restaurants/{id}")]
+    public async Task<ActionResult<RestaurantWithProductsResponseDto>> GetRestaurantById(int id)
+    {
+        return Ok(await _restaurantManagementService.GetRestaurantById(id));
     }
     
     [HttpPost("/register-restaurant")]

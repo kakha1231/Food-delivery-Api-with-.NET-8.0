@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json.Serialization;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,10 @@ using Steeltoe.Discovery.Consul;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+{
+    x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // Optional: Add Swagger for API documentation
 builder.Services.AddEndpointsApiExplorer();
@@ -58,10 +62,10 @@ builder.Services.AddMassTransit(busConfigurator =>
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
-        configurator.Host(("rabbitmq"), h =>
+        configurator.Host(builder.Configuration["MessageBroker:Host"], h =>
         {
-            h.Username(builder.Configuration["MessageBroker: Username"]);
-            h.Password(builder.Configuration["MessageBroker: Password"]);
+            h.Username(builder.Configuration["MessageBroker:Username"]);
+            h.Password(builder.Configuration["MessageBroker:Password"]);
         });
         configurator.ConfigureEndpoints(context);
     });
@@ -70,6 +74,8 @@ builder.Services.AddMassTransit(busConfigurator =>
 builder.Services.AddServiceDiscovery(op => op.UseConsul());;
 
 builder.Services.AddHttpClient().AddServiceDiscovery(op => op.UseConsul());
+
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 
 var app = builder.Build();
 

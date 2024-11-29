@@ -21,6 +21,10 @@ public class RestaurantDbContext : DbContext
             .HasOne(p => p.Restaurant)
             .WithMany(r => r.Products)
             .HasForeignKey(p => p.RestaurantId);
+        
+        modelBuilder.Entity<Product>()
+            .Property(p => p.Category)
+            .HasConversion<int>();
     }
 
 }

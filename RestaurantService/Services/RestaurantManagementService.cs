@@ -23,7 +23,8 @@ public class RestaurantManagementService
 
     public async Task<List<RestaurantResponseDto>> GetRestaurants()
     {
-        var restaurants =  await _restaurantDbContext.Restaurants.Select(r => new RestaurantResponseDto
+        var restaurants =  await _restaurantDbContext.Restaurants
+            .Select(r => new RestaurantResponseDto
         {
             Id = r.Id,
             Name = r.Name,
@@ -40,19 +41,20 @@ public class RestaurantManagementService
         return restaurants;
     }
     
-    public async Task<RestaurantResponseDto> GetRestaurantById(int id)
+    public async Task<RestaurantWithProductsResponseDto> GetRestaurantById(int id)
     {
-        var restaurant =  await _restaurantDbContext.Restaurants.FindAsync(id);
+        var restaurant =  await _restaurantDbContext.Restaurants.Include(r => r.Products).
+            FirstOrDefaultAsync(r => r.Id == id);
 
         if (restaurant == null)
         {
             throw new ArgumentException("Restaurant not found");
         }
 
-        return RestaurantResponseDto.FromRestaurant(restaurant);
+        return RestaurantWithProductsResponseDto.FromRestaurant(restaurant);
     }
-
-    public async Task<Restaurant> RegisterRestaurant(RestaurantRegistrationDto registrationDto,string userId)
+    
+    public async Task<RestaurantResponseDto> RegisterRestaurant(RestaurantRegistrationDto registrationDto,string userId)
     {
         var restaurantExists =await _restaurantDbContext.Restaurants.FirstOrDefaultAsync(r => r.OwnerId == userId);
 
@@ -72,6 +74,6 @@ public class RestaurantManagementService
             UserId = userId
         });
         
-        return restaurant;
+        return RestaurantResponseDto.FromRestaurant(restaurant);
     }
 }

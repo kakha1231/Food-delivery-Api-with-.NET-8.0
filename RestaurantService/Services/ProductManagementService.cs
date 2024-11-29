@@ -22,7 +22,14 @@ public class ProductManagementService
     public async Task<List<ProductResponseDto>> GetProducts()
     {
         var products = await _restaurantDbContext.Products
-            .Select(p => ProductResponseDto.FromProduct(p))
+            .Select(p => new ProductResponseDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Category = p.Category,
+                Description = p.Description,
+                Price = p.Price
+            })
             .ToListAsync();
         return products;
     }
@@ -73,23 +80,14 @@ public class ProductManagementService
         {
             throw new ArgumentException("Restaurant Not Found");
         }
-
+        
         var product = productDto.CreateProduct();
 
         product.RestaurantId = restaurant.Id;
         product.Restaurant = restaurant;
-        
-        try
-        {
-            await _restaurantDbContext.Products.AddAsync(product);
-            await _restaurantDbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex,"Failed To Add Product For Restaurant {restaurantId}",restaurant.Id);
-           
-            throw new Exception("Failed To Add Product");
-        }
+
+        await _restaurantDbContext.Products.AddAsync(product);
+        await _restaurantDbContext.SaveChangesAsync();
         
         return ProductResponseDto.FromProduct(product);
     }

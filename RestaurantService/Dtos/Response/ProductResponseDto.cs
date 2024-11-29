@@ -1,4 +1,6 @@
-﻿using RestaurantService.Models;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using RestaurantService.Models;
 
 namespace RestaurantService.Dtos.Response;
 
@@ -8,7 +10,8 @@ public class ProductResponseDto
     
     public string Name { get; set; }
     
-    public string Category { set; get; }
+    [JsonConverter(typeof(StringEnumConverter))]
+    public ProductCategory Category { set; get; }
     
     public decimal Price { get; set; }
     
@@ -22,8 +25,8 @@ public class ProductResponseDto
         {
             Id = product.Id,
             Name = product.Name,
-            Category = product.Category.ToString(),
             Price = product.Price,
+            Category = product.Category,
             Description = product.Description
         };
     }
