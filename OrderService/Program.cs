@@ -9,7 +9,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using OrderService.Consumers;
 using OrderService.Entity;
+using OrderService.Hubs;
 using OrderService.Services;
+using StackExchange.Redis;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
@@ -23,7 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer(); 
-builder.Services.AddSwaggerGen(); 
+builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.AddDbContext<OrderDbContext>(options =>
@@ -36,6 +38,25 @@ var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();
 
 builder.Services.AddJwtAuthentication(jwtIssuer, jwtKey);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder =>
+        {
+            builder
+                .WithOrigins(
+                    "http://localhost:5500",
+                    "http://localhost:5501",
+                    "http://localhost:5502",
+                    "http://localhost:5503" 
+                )
+                .AllowAnyMethod() 
+                .AllowAnyHeader() 
+                .AllowCredentials();
+        });
+});
+
+
 builder.Services.AddMassTransit(busConfigurator =>
 {
     busConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -43,10 +64,11 @@ builder.Services.AddMassTransit(busConfigurator =>
     busConfigurator.AddConsumer<OrderAcceptedByRestaurantEventConsumer>();
     busConfigurator.AddConsumer<OrderRejectedByRestaurantEventConsumer>();
     busConfigurator.AddConsumer<OrderStatusUpdatedEventConsumer>();
+    busConfigurator.AddConsumer<CourierLocationUpdatedEventConsumer>();
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
-        configurator.Host(("rabbitmq"), h =>
+        configurator.Host(builder.Configuration["MessageBroker:Host"], h =>
         {
             h.Username(builder.Configuration["MessageBroker: Username"]);
             h.Password(builder.Configuration["MessageBroker: Password"]);
@@ -76,6 +98,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(); // Optional: for Swagger UI
 }
 
+app.UseCors("AllowAllOrigins");
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication(); 
@@ -83,6 +107,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers(); // Map controller endpoints
+
+app.MapHub<OrderHub>("/orderHub");
 
 app.MapGet("/health", () => "healthy");
 

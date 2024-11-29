@@ -11,8 +11,8 @@ using RestaurantService.Entity;
 namespace RestaurantService.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    [Migration("20241008150516_Initial")]
-    partial class Initial
+    [Migration("20241129135335_FixingBugtAboutEnum")]
+    partial class FixingBugtAboutEnum
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,13 +32,15 @@ namespace RestaurantService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("InStock")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -82,7 +84,6 @@ namespace RestaurantService.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Location")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

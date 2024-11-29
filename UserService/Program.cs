@@ -34,6 +34,7 @@ builder.Services.AddIdentity<User,IdentityRole>()
     .AddUserManager<UserManager<User>>()
     .AddRoleManager<RoleManager<IdentityRole>>()
     .AddEntityFrameworkStores<UserDbContext>();
+    
 
     
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
@@ -50,7 +51,7 @@ builder.Services.AddMassTransit(busConfigurator =>
     
     busConfigurator.UsingRabbitMq((context, configurator) =>
     {
-        configurator.Host(("rabbitmq"), h =>
+        configurator.Host(builder.Configuration["MessageBroker:Host"], h =>
         {
             h.Username(builder.Configuration["MessageBroker: Username"]);
             h.Password(builder.Configuration["MessageBroker: Password"]);
@@ -95,8 +96,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-app.RegisterConsul(configuration, app.Lifetime);
 
 app.MapGet("/health", () => "healthy");
 

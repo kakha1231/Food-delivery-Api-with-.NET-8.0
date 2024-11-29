@@ -1,8 +1,8 @@
 ﻿using Common.Dtos;
 
-namespace Common.Library;
+namespace Common.Dtos;
 
-public class ProductValidationResult
+public record ProductValidationResult
 {
     public bool IsValid { get; set; }
     public List<ProductDto>? ValidProducts { get; set; }

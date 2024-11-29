@@ -2,6 +2,7 @@
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RestaurantService.Dtos.Request;
+using RestaurantService.Dtos.Response;
 using RestaurantService.Entity;
 using RestaurantService.Models;
 
@@ -20,7 +21,40 @@ public class RestaurantManagementService
     }
 
 
-    public async Task<Restaurant> RegisterRestaurant(RestaurantRegistrationDto registrationDto,string userId)
+    public async Task<List<RestaurantResponseDto>> GetRestaurants()
+    {
+        var restaurants =  await _restaurantDbContext.Restaurants
+            .Select(r => new RestaurantResponseDto
+        {
+            Id = r.Id,
+            Name = r.Name,
+            Type = r.Type,
+            Country = r.Country,
+            City = r.City,
+            PostCode = r.PostCode,
+            Address = r.Address,
+            Location = r.Location,
+            PhoneNumber = r.PhoneNumber,
+            Email = r.Email,
+        }).ToListAsync();
+
+        return restaurants;
+    }
+    
+    public async Task<RestaurantWithProductsResponseDto> GetRestaurantById(int id)
+    {
+        var restaurant =  await _restaurantDbContext.Restaurants.Include(r => r.Products).
+            FirstOrDefaultAsync(r => r.Id == id);
+
+        if (restaurant == null)
+        {
+            throw new ArgumentException("Restaurant not found");
+        }
+
+        return RestaurantWithProductsResponseDto.FromRestaurant(restaurant);
+    }
+    
+    public async Task<RestaurantResponseDto> RegisterRestaurant(RestaurantRegistrationDto registrationDto,string userId)
     {
         var restaurantExists =await _restaurantDbContext.Restaurants.FirstOrDefaultAsync(r => r.OwnerId == userId);
 
@@ -40,6 +74,6 @@ public class RestaurantManagementService
             UserId = userId
         });
         
-        return restaurant;
+        return RestaurantResponseDto.FromRestaurant(restaurant);
     }
 }
