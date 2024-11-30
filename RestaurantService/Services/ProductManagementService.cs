@@ -1,4 +1,5 @@
 ﻿using Common.Dtos;
+using Common.Enums;
 using Microsoft.EntityFrameworkCore;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;

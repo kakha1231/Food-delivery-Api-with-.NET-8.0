@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Common.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using RestaurantService.Models;
 
