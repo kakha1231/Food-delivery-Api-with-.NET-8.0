@@ -1,4 +1,5 @@
-﻿using RestaurantService.Models;
+﻿using Common.Enums;
+using RestaurantService.Models;
 
 namespace RestaurantService.Dtos.Request;
 

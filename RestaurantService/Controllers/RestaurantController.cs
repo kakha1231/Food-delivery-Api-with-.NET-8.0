@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Common.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RestaurantService.Dtos.Request;
 using RestaurantService.Dtos.Response;
@@ -19,9 +20,9 @@ public class RestaurantController : ControllerBase
     }
 
     [HttpGet("/restaurants")]
-    public async Task<ActionResult<List<RestaurantResponseDto>>> GetRestaurants()
+    public async Task<ActionResult<List<RestaurantResponseDto>>> GetRestaurants([FromQuery]List<string> categories)
     {
-        return Ok(await _restaurantManagementService.GetRestaurants());
+        return Ok(await _restaurantManagementService.GetRestaurants(categories));
     }
 
     [HttpGet("/restaurants/{id}")]

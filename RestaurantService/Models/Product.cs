@@ -1,4 +1,6 @@
-﻿namespace RestaurantService.Models;
+﻿using Common.Enums;
+
+namespace RestaurantService.Models;
 
 public class Product
 {
@@ -15,41 +17,4 @@ public class Product
     public bool InStock { set; get; }
     public int RestaurantId { get; set; }
     public Restaurant Restaurant { get; set; }
-}
-
-
-public enum ProductCategory
-{
-    Alcohol,
-    American,
-    Asian,
-    BakeryAndPastry,
-    Beer,
-    Breakfast,
-    Burgers,
-    Chicken,
-    Desserts,
-    Drinks,
-    European,
-    FastFood,
-    Georgian,
-    Grill,
-    Healthy,
-    HotDogs,
-    IceCream,
-    Indian,
-    International,
-    Italian,
-    Mexican,
-    Pasta,
-    Pizza,
-    Salads,
-    Sandwich,
-    Shawarma,
-    Soup,
-    Sushi,
-    Sweets,
-    TeaCoffee,
-    Vegetarian,
-    Wine,
 }

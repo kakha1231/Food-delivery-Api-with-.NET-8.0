@@ -1,4 +1,5 @@
 ﻿using Common.Contracts;
+using Common.Enums;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using RestaurantService.Dtos.Request;
@@ -21,10 +22,25 @@ public class RestaurantManagementService
     }
 
 
-    public async Task<List<RestaurantResponseDto>> GetRestaurants()
+    public async Task<List<RestaurantResponseDto>> GetRestaurants(List<string>? categories = null, int page = 1)
     {
-        var restaurants =  await _restaurantDbContext.Restaurants
-            .Select(r => new RestaurantResponseDto
+        
+        var parsedCategories = categories?.Where(category => 
+                Enum.TryParse<ProductCategory>(category, true, out _))
+            .Select(category => Enum.Parse<ProductCategory>(category, true))
+            .ToList();
+        
+        var query = _restaurantDbContext.Restaurants.
+            Skip((page - 1) * 20)
+            .Take(20)
+            .AsQueryable();
+
+        if (parsedCategories != null && parsedCategories.Any())
+        {
+            query = query.Where(r => r.Products.Any(p => parsedCategories.Contains(p.Category)));
+        }
+
+        var restaurants =  await query.Select(r => new RestaurantResponseDto 
         {
             Id = r.Id,
             Name = r.Name,
@@ -35,9 +51,9 @@ public class RestaurantManagementService
             Address = r.Address,
             Location = r.Location,
             PhoneNumber = r.PhoneNumber,
-            Email = r.Email,
+            Email = r.Email
         }).ToListAsync();
-
+        
         return restaurants;
     }
     
