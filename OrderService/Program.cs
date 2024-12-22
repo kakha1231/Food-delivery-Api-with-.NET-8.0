@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Common.Configuration;
 using Common.Contracts;
 using MassTransit;
@@ -21,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
 builder.Services.AddEndpointsApiExplorer(); 
@@ -31,7 +32,14 @@ builder.Services.AddSignalR();
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection")));
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "Orders_";
+});
+
 builder.Services.AddScoped<OrderManagementService>();
+builder.Services.AddScoped<RedisCacheService>();
 
 var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
 var jwtKey = builder.Configuration.GetSection("Jwt:JwtSecret").Get<string>();

@@ -1,10 +1,26 @@
 ﻿services:
+  
+  redis:
+    image: redis:latest
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - backend
+    ports:
+      - "6379:6379"  
+    volumes:
+      - redis_data:/data
+         
+  
   rabbitmq:
     image: rabbitmq:3-management
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 20s
-      timeout: 20s
+      timeout: 10s
       retries: 3
     container_name: RabbitMQ
     networks:
@@ -80,6 +96,8 @@
     build:
       context: .
       dockerfile: OrderService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     depends_on: 
       rabbitmq:
         condition: service_healthy
@@ -112,3 +130,6 @@ networks:
   backend :
     driver: bridge
     
+volumes:
+  redis_data:
+    driver: local

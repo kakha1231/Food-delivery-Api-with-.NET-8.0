@@ -22,12 +22,7 @@ public class CourierHub : Hub
     public async Task AcceptOrder(string orderId, int courierId)
     {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, "AvailableCouriers");
-
-           await _publishEndpoint.Publish(new OrderAcceptedByCourierEvent
-            {
-                OrderId = orderId,
-                CourierId = courierId,
-            });
+            
     }
     
     public async Task UpdateLocation(int orderId, double latitude, double longitude)

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace OrderService.Models;
 
@@ -13,7 +14,8 @@ public sealed class OrderItem
     public decimal UnitPrice { get; set; } 
     public int Quantity { get; set; } 
     private decimal TotalPrice => UnitPrice * Quantity;
-    
+    [JsonIgnore]
     public int? OrderId { get; set; } 
+    [JsonIgnore]
     public Order? Order { set; get; }
 }

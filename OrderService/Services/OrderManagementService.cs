@@ -2,9 +2,12 @@
 using Common.Dtos;
 using Common.Enums;
 using MassTransit;
+using Microsoft.Extensions.Caching.Distributed;
 using OrderService.Dtos;
 using OrderService.Entity;
 using OrderService.Models;
+using StackExchange.Redis;
+using Order = OrderService.Models.Order;
 
 namespace OrderService.Services;
 
@@ -14,13 +17,15 @@ public class OrderManagementService
     private readonly ILogger<OrderManagementService> _logger;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly RedisCacheService _redisCacheService;
 
-    public OrderManagementService(OrderDbContext orderDbContext, ILogger<OrderManagementService> logger, IHttpClientFactory httpClientFactory, IPublishEndpoint publishEndpoint)
+    public OrderManagementService(OrderDbContext orderDbContext, ILogger<OrderManagementService> logger, IHttpClientFactory httpClientFactory, IPublishEndpoint publishEndpoint, RedisCacheService redisCacheService)
     {
         _orderDbContext = orderDbContext;
         _logger = logger;
         _httpClientFactory = httpClientFactory;
         _publishEndpoint = publishEndpoint;
+        _redisCacheService = redisCacheService;
     }
 
     public async Task<string> CreateOrder(CreateOrderDto createOrderDto, string userId)
@@ -52,10 +57,12 @@ public class OrderManagementService
             TotalAmount = productValidationResult.ValidProducts.Sum(pr => pr.Quantity * pr.Price),
             OrderNumber = new Random().Next(100, 1000)
         };
-
+        
         _orderDbContext.Orders.Add(order);
+        
         await _orderDbContext.SaveChangesAsync();
-
+        await _redisCacheService.Set(order.Id.ToString(), order);
+        
         await _publishEndpoint.Publish(new OrderCreatedEvent
         {
             OrderId = order.Id,
