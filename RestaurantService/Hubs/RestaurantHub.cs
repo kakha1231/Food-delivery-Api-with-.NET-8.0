@@ -75,7 +75,6 @@ public class RestaurantHub : Hub
                 RestaurantName = restaurant.Name,
                 RestaurantLocation = restaurant.Location,
                 RestaurantAddress = restaurant.Address,
-                Timestamp = default,
             });
         }
     }

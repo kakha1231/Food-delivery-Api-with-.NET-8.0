@@ -10,7 +10,7 @@ public class OrderDbContext : DbContext
     
     public OrderDbContext(DbContextOptions<OrderDbContext> options) : base(options)
     {
-        
+        this.ChangeTracker.LazyLoadingEnabled = false;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -3,44 +3,45 @@
     {
       "DownstreamPathTemplate": "/{url}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{
-        "Host": "restaurantservice",
-        "Port": 5048
-      }],
+      "ServiceName": "restaurantService",
       "UpstreamPathTemplate": "/restaurant/{url}",
       "UpstreamHttpMethod": ["GET","POST","PUT"],
-      "LoadBalancer": "NoLoadBalancer"
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "UseServiceDiscovery": true
     },
     
     {
       "DownstreamPathTemplate": "/{url}", 
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{
-        "Host": "userservice",
-        "Port": 5038
-      }],
+      "ServiceName": "userService",
       "UpstreamPathTemplate": "/user/{url}",
       "UpstreamHttpMethod": ["GET","POST","PUT"],
-      "LoadBalancer": "NoLoadBalancer"
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "UseServiceDiscovery": true
     },
 
     {
       "DownstreamPathTemplate": "/{url}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{
-        "Host": "orderservice",
-        "Port": 5058
-      }],
+      "ServiceName": "orderService",
       "UpstreamPathTemplate": "/order/{url}",
       "UpstreamHttpMethod": ["GET","POST","PUT"],
-      "LoadBalancer": "NoLoadBalancer"
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "UseServiceDiscovery": true
     }
   ],
   "GlobalConfiguration": {
     "ServiceDiscoveryProvider": {
-      "Host": "consul",
+      "Host": "Consul",
       "Port": 8500,
       "Type": "Consul"
-    }
+    },
+    "DownstreamScheme": "http"
   }
 }

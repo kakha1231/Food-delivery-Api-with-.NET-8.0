@@ -13,7 +13,6 @@ using UserService.Models;
 using UserService.Services;
 using UserService.Consumers;
 using UserService.Data.Seeders;
-using UserService.Helper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,8 +59,9 @@ builder.Services.AddMassTransit(busConfigurator =>
     });
 });
 
-var configuration = builder.Configuration;
+builder.Services.AddServiceDiscovery(op => op.UseConsul());;
 
+builder.Services.AddHttpClient().AddServiceDiscovery(op => op.UseConsul());
 
 var app = builder.Build();
 

@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Entity;
 using OrderService.Hubs;
+using OrderService.Models;
+using OrderService.Services;
 
 namespace OrderService.Consumers;
 
@@ -14,21 +16,29 @@ public sealed class OrderAcceptedByRestaurantEventConsumer : IConsumer<OrderAcce
     private readonly OrderDbContext _orderDbContext;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IHubContext<OrderHub> _hubContext;
+    private readonly RedisCacheService _redisCacheService;
 
-    public OrderAcceptedByRestaurantEventConsumer(OrderDbContext orderDbContext, IPublishEndpoint publishEndpoint, IHubContext<OrderHub> hubContext)
+    public OrderAcceptedByRestaurantEventConsumer(OrderDbContext orderDbContext, IPublishEndpoint publishEndpoint, IHubContext<OrderHub> hubContext, RedisCacheService redisCacheService)
     {
         _orderDbContext = orderDbContext;
         _publishEndpoint = publishEndpoint;
         _hubContext = hubContext;
+        _redisCacheService = redisCacheService;
     }
 
     public async Task Consume(ConsumeContext<OrderAcceptedByRestaurantEvent> context)
     {
-        var order = await _orderDbContext.Orders
-            .Where(o => o.Id == context.Message.OrderId && o.RestaurantId == context.Message.RestaurantId)
-            .Include(o => o.OrderItems)
-            .FirstOrDefaultAsync();
         
+        var order = await _redisCacheService.Get<Order>(context.Message.OrderId.ToString());
+
+        if (order == null) 
+        {
+            order = await _orderDbContext.Orders
+                .Where(o => o.Id == context.Message.OrderId && o.RestaurantId == context.Message.RestaurantId)
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync();
+        }
+
         if (order != null && order.Status != OrderStatus.Accepted)
         {
             
@@ -57,8 +67,9 @@ public sealed class OrderAcceptedByRestaurantEventConsumer : IConsumer<OrderAcce
             
             order.Status = OrderStatus.Accepted;
             order.UpdatedAt = context.Message.Timestamp;
-            await _orderDbContext.SaveChangesAsync();
             
+            await _redisCacheService.Update(order.Id.ToString(), order);
+            await _orderDbContext.SaveChangesAsync();
         }
     }
 }

@@ -1,27 +1,6 @@
 # This is a generated file. Not intended for manual editing.
 services:
-  apigateway:
-    build:
-      context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
-      dockerfile: "ApiGateway/Dockerfile"
-      target: "base"
-    command: []
-    entrypoint:
-    - "dotnet"
-    - "/app/bin/Debug/net8.0/ApiGateway.dll"
-    environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
-      DOTNET_USE_POLLING_FILE_WATCHER: "true"
-      NUGET_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-      NUGET_FALLBACK_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-    image: "apigateway:dev"
-    ports: []
-    volumes:
-    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/fallbackpackages"
-    - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\ApiGateway:/app:rw"
-    - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
-    working_dir: "/app"
-  courierservice:
+  courier-service:
     build:
       context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
       dockerfile: "CourierService/Dockerfile"
@@ -33,16 +12,33 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
-      NUGET_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-      NUGET_FALLBACK_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
     image: "courierservice:dev"
     ports: []
     volumes:
-    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/fallbackpackages"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\CourierService:/app:rw"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
+    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/packages"
     working_dir: "/app"
-  orderservice:
+  gateway:
+    build:
+      context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
+      dockerfile: "ApiGateway/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/ApiGateway.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "apigateway:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\ApiGateway:/app:rw"
+    - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
+    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/packages"
+    working_dir: "/app"
+  order-service:
     build:
       context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
       dockerfile: "OrderService/Dockerfile"
@@ -52,18 +48,15 @@ services:
     - "dotnet"
     - "/app/bin/Debug/net8.0/OrderService.dll"
     environment:
-      ASPNETCORE_ENVIRONMENT: "Development"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
-      NUGET_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-      NUGET_FALLBACK_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
     image: "orderservice:dev"
     ports: []
     volumes:
-    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/fallbackpackages"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\OrderService:/app:rw"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
+    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/packages"
     working_dir: "/app"
-  restaurantservice:
+  restaurant-service:
     build:
       context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
       dockerfile: "RestaurantService/Dockerfile"
@@ -74,16 +67,14 @@ services:
     - "/app/bin/Debug/net8.0/RestaurantService.dll"
     environment:
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
-      NUGET_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-      NUGET_FALLBACK_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
     image: "restaurantservice:dev"
     ports: []
     volumes:
-    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/fallbackpackages"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\RestaurantService:/app:rw"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
+    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/packages"
     working_dir: "/app"
-  userservice:
+  user-service:
     build:
       context: "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0"
       dockerfile: "UserService/Dockerfile"
@@ -95,12 +86,10 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"
-      NUGET_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
-      NUGET_FALLBACK_PACKAGES: "C:\\Users\\kaxaq\\.nuget\\packages"
     image: "userservice:dev"
     ports: []
     volumes:
-    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/fallbackpackages"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0\\UserService:/app:rw"
     - "C:\\Users\\kaxaq\\RiderProjects\\Food-delivery-Api-with .NET-8.0:/src:rw"
+    - "C:\\Users\\kaxaq\\.nuget\\packages:/root/.nuget/packages"
     working_dir: "/app"

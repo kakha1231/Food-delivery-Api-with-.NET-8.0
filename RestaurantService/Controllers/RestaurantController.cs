@@ -19,13 +19,13 @@ public class RestaurantController : ControllerBase
         _restaurantManagementService = restaurantManagementService;
     }
 
-    [HttpGet("/restaurants")]
-    public async Task<ActionResult<List<RestaurantResponseDto>>> GetRestaurants([FromQuery]List<string> categories)
+    [HttpGet("/restaurants/{page}")]
+    public async Task<ActionResult<List<RestaurantResponseDto>>> GetRestaurants([FromQuery]List<string> categories, int page )
     {
         return Ok(await _restaurantManagementService.GetRestaurants(categories));
     }
 
-    [HttpGet("/restaurants/{id}")]
+    [HttpGet("/restaurant/{id}")]
     public async Task<ActionResult<RestaurantWithProductsResponseDto>> GetRestaurantById(int id)
     {
         return Ok(await _restaurantManagementService.GetRestaurantById(id));
