@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Consul" Version="1.7.14.6" />
         <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.6-develop.2065" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.2"/>

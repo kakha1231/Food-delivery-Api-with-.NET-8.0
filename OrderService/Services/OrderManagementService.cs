@@ -77,7 +77,7 @@ public class OrderManagementService
 
     private async Task<ProductValidationResult> ValidateProducts(CreateOrderDto createOrderDto)
     {
-        var httpClient = _httpClientFactory.CreateClient("productServiceClient");
+        var httpClient = _httpClientFactory.CreateClient("restaurantServiceClient");
         
          var validationRequestDto = new ProductValidationRequest
          {

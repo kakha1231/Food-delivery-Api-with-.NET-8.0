@@ -1,3 +1,4 @@
+using ApiGateway;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -20,16 +21,12 @@ builder.Configuration.AddJsonFile("Ocelot.json",optional: false, reloadOnChange:
 
 Console.WriteLine(File.ReadAllText("Ocelot.json"));
 
-builder.Services.AddOcelot(builder.Configuration)
-    .AddConsul();
+builder.Services.AddOcelot()
+    .AddConsul<MyConsulServiceBuilder>();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.UseOcelot().Wait();
 

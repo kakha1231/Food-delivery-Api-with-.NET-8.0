@@ -89,12 +89,12 @@ builder.Services.AddServiceDiscovery(op => op.UseConsul());
 
 builder.Services.AddHttpClient("userServiceClient", client =>
 {
-    client.BaseAddress = new Uri("http://user-service");
+    client.BaseAddress = new Uri("http://userService");
 }).AddServiceDiscovery();
 
-builder.Services.AddHttpClient("productServiceClient", client =>
+builder.Services.AddHttpClient("restaurantServiceClient", client =>
 {
-    client.BaseAddress = new Uri("http://restaurant-service");
+    client.BaseAddress = new Uri("http://restaurantService");
 }).AddServiceDiscovery();
 
 var app = builder.Build();
